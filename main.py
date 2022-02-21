@@ -100,6 +100,8 @@ def get_chip_contour(img): # ищет прямоугольник на выдел
     #                        |    |
     #                        3 -- 2
 
+    (y_chip, x_chip) = (390, 654)
+
     contours, hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     img_contour = cv2.imread("output/img_orig.jpg")
@@ -152,6 +154,7 @@ def get_resistor_images(chip_img, resistor_placement): # выделяет рез
 
 def resistor_detection(resistor_placement): # TODO должен определять сопротивление резисторова на каждом месте чипа
     name = ""
+    (w_res, h_res) = (110, 40)
     for t in resistor_placement:
         t_num = int(t[0])
         chip_img = cv2.imread("output/chip_norm_pos.jpg")
@@ -181,10 +184,9 @@ def process_photo(path):
 
 # min_hue, max_hue, min_sat, max_sat, min_val, max_val = img_color_calibration(img);
 
-(y_chip, x_chip) = (390, 654)
-chip_dimensions = (x_chip, y_chip)
-# resistor dimensions
-(w_res, h_res) = (110, 40)
+# (y_chip, x_chip) = (390, 654)  # chip dimensions
+# (w_res, h_res) = (110, 40)  # resistor dimensions
+
 photo_num = 1
 path = "Resources/photo (" + str(photo_num) + ").jpg"
 
