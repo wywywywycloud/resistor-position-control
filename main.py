@@ -178,9 +178,6 @@ def process_photo(path):
 
     get_resistor_images(chip_img, resistor_placement)
 
-    cv2.imshow("Detected chip", chip_img)
-    cv2.imshow("Original image", img_orig)
-
 
 # min_hue, max_hue, min_sat, max_sat, min_val, max_val = img_color_calibration(img);
 
@@ -191,6 +188,12 @@ photo_num = 1
 path = "Resources/photo (" + str(photo_num) + ").jpg"
 
 process_photo(path)
+
+chip_img = ("output/chip_norm_pos.jpg")
+img_orig = ("output/img_orig.jpg")
+
+cv2.imshow("Detected chip", chip_img)
+cv2.imshow("Original image", img_orig)
 
 cv2.waitKey(0)
 
