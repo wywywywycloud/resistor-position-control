@@ -16,9 +16,6 @@ import pydot
 
 from tensorflow.python.keras import models, layers
 
-
-#path = "Resources/strain_resistors_type_1/norm_pos/IMG_7722.JPG"
-
 # 5182, 3455
 width_img, height_img = 1869, 1052
 width_chip, height_chip = 400, 300
@@ -140,7 +137,7 @@ def get_chip_contour(img): # ищет прямоугольник на выдел
             #cv2.waitKey(0)
 
 
-def get_resistor_images(chip_img, resistor_placement): # выделяет резисторы с обрезанного фото чипа
+def get_resistor_images(chip_img, resistor_placement):  # выделяет резисторы с обрезанного фото чипа
     (w_res, h_res) = (110, 40)
 
     for t in resistor_placement:
