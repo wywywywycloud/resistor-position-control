@@ -189,8 +189,8 @@ path = "Resources/photo (" + str(photo_num) + ").jpg"
 
 process_photo(path)
 
-chip_img = ("output/chip_norm_pos.jpg")
-img_orig = ("output/img_orig.jpg")
+chip_img = cv2.imread("output/chip_norm_pos.jpg")
+img_orig = cv2.imread("output/img_orig.jpg")
 
 cv2.imshow("Detected chip", chip_img)
 cv2.imshow("Original image", img_orig)
