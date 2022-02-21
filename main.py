@@ -179,7 +179,7 @@ def process_photo(path):
     cv2.imshow("Original image", img_orig)
 
 
-#min_hue, max_hue, min_sat, max_sat, min_val, max_val = img_color_calibration(img);
+# min_hue, max_hue, min_sat, max_sat, min_val, max_val = img_color_calibration(img);
 
 (y_chip, x_chip) = (390, 654)
 chip_dimensions = (x_chip, y_chip)
@@ -188,11 +188,8 @@ chip_dimensions = (x_chip, y_chip)
 photo_num = 1
 path = "Resources/photo (" + str(photo_num) + ").jpg"
 
-
 process_photo(path)
 
 cv2.waitKey(0)
 
 model = models.load_model('transistor_classifier.model')
-
-
