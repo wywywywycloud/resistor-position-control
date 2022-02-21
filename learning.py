@@ -65,6 +65,8 @@ def train_model():
       x_train.append(feature)
       y_train.append(label)
 
+
+
     for feature, label in val:
       x_val.append(feature)
       y_val.append(label)
@@ -78,6 +80,7 @@ def train_model():
 
     x_val.reshape(-1, img_size_h, img_size_w, 1)
     y_val = np.array(y_val)
+
 
     datagen = ImageDataGenerator(
             featurewise_center=False,  # set input mean to 0 over the dataset
