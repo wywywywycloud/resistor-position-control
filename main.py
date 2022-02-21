@@ -111,19 +111,13 @@ def get_chip_contour(img): # ищет прямоугольник на выдел
             cv2.fillPoly(img_contour, pts=[cnt], color=(255, 255, 255))  # Закрашивает контур платы
             peri = cv2.arcLength(cnt, True)
             approx_points = cv2.approxPolyDP(cnt, 0.05*peri, True)
-            #printapprox_points)
             cv2.imwrite("output/chip_boundaries.jpg", img)
-            ####cv2.waitKey(0)
 
             type(approx_points)
             obj_corners = len(approx_points)
             x, y, w, h = cv2.boundingRect(approx_points)
-
-            # получили углы платы
-            #print (x, y, w, h)
             cv2.rectangle(img_contour, (x, y), (x+w, y+h), (0, 255, 2))
             rect = cv2.minAreaRect(cnt)
-            ##printrect)
             chip_box = cv2.boxPoints(rect)
             chip_box_list = list(chip_box)
 
@@ -172,23 +166,20 @@ def process_photo(path):
     cv2.imwrite("output/img_orig.jpg", img_orig)
     img = cv2.resize(img, (width_img, height_img))
 
-    #min_hue, max_hue, min_sat, max_sat, min_val, max_val = img_color_calibration(img);
-
     masked_img = mask_img(img, min_hue, max_hue, min_sat, max_sat, min_val, max_val)
     cropped_chip_img = cv2.bitwise_and(img, img, mask=masked_img)
     chip_uncrop_masked = img_chip_select(cropped_chip_img)
     get_chip_contour(chip_uncrop_masked)
     chip_img = cv2.imread("output/chip_norm_pos.jpg")
-
-    #resistor_placement=pd.read_csv('resistor_placement.csv', sep=',',header=None)
     resistor_placement = genfromtxt('Resources/resistor_placement.csv', delimiter=';')
 
     get_resistor_images(chip_img, resistor_placement)
-    #resistor_detection(resistor_placement)
 
     cv2.imshow("Detected chip", chip_img)
     cv2.imshow("Original image", img_orig)
 
+
+#min_hue, max_hue, min_sat, max_sat, min_val, max_val = img_color_calibration(img);
 
 (y_chip, x_chip) = (390, 654)
 chip_dimensions = (x_chip, y_chip)
