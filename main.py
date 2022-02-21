@@ -147,7 +147,7 @@ def get_resistor_images(chip_img, resistor_placement): # выделяет рез
         print(t)
         t_num = int(t[0])
         res = chip_img[int(t[2]):int(t[2]) + h_res, int(t[1]):int(t[1]) + w_res]
-        name = "output\\res_"+str(t_num)+".jpg"
+        name = "output/res_"+str(t_num)+".jpg"
         cv2.imwrite(name, res)
         print(int(t[0]), name)
 
@@ -159,7 +159,7 @@ def resistor_detection(resistor_placement): # TODO должен определя
         t_num = int(t[0])
         chip_img = cv2.imread("output/chip_norm_pos.jpg")
         res = chip_img[int(t[2]):int(t[2]) + h_res, int(t[1]):int(t[1]) + w_res]
-        name = "output\\res_"+str(t_num)+".jpg"
+        name = "output/res_"+str(t_num)+".jpg"
         cv2.imwrite(name, res)
 
 
