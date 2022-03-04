@@ -49,9 +49,9 @@ while True:
                 window['trs'+str(count)].update(data=tr_bytes)
                 count += 1
 
-            des = '\n\n'
+            des = ''
             for key, d in brd[2].items():
-                des = des + str(d[0]) + ' with probability ' + str(d[1]) + '\n\n\n\n\n'
+                des = des + str(d[0]) + ' (Вероятность ' + str(d[1]) + ')' + '\n\n\n\n\n'
 
             window['dsc'].update(des)
 

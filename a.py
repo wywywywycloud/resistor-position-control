@@ -28,6 +28,7 @@ width_chip, height_chip = 400, 300
 
 def img2hsv(img):
     img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    cv2.imwrite("output/chip_hsv.jpg", img)
     return img
 
 
@@ -108,8 +109,6 @@ def get_chip_contour(img, img_orig): # ищет прямоугольник на 
 
             type(approx_points)
             obj_corners = len(approx_points)
-            x, y, w, h = cv2.boundingRect(approx_points)
-            cv2.rectangle(img_orig, (x, y), (x+w, y+h), (0, 255, 2))
             rect = cv2.minAreaRect(cnt)
             chip_box = cv2.boxPoints(rect)
             chip_box_list = list(chip_box)
@@ -144,17 +143,8 @@ def get_resistor_images(chip_img, resistor_placement):  # выделяет ре�
     return resistor_images
 
 
-# def resistor_detection(resistor_placement): # TODO должен определять сопротивление резисторова на каждом месте чипа
-#     name = ""
-#     (w_res, h_res) = (110, 40)
-#     for t in resistor_placement:
-#         t_num = int(t[0])
-#         chip_img = cv2.imread("output/chip_norm_pos.jpg")
-#         res = chip_img[int(t[2]):int(t[2]) + h_res, int(t[1]):int(t[1]) + w_res]
-#         name = "output/res_"+str(t_num)+".jpg"
-#         cv2.imwrite(name, res)
-
 model = models.load_model('resistor-position-control/transistor_classifier.model')
+
 
 def process_photo(img):
     img_orig = cv2.resize(img, (width_img, height_img))
@@ -173,12 +163,12 @@ def process_photo(img):
     resistor_images = []
     resistor_images = get_resistor_images(cropped_chip_img, resistor_placement)
 
-    labels = {0: "no_res",
-              1: "1430 Om",
-              2: '12 Om',
-              3: '174000 Om',
-              4: '1300 Om',
-              5: '47200 OM'}
+    labels = {0: "Резистор отсутствует",
+              1: "R = 1430 Ом",
+              2: 'R = 12 Ом',
+              3: 'R = 174000 Ом',
+              4: 'R = 1300 Ом',
+              5: 'R = 47200 Ом'}
 
     results = {}
     count = 0
