@@ -19,6 +19,12 @@ import os
 
 import numpy as np
 
+''' 
+Разбитые по папкам фото резисторов из двух выборок - тестовая и тренировочная - подгружаются в модель, которая
+затем обучается на фотографиях и сохраняется в проект.
+
+В массив labels пишутся названия папок с разными типа резисторов
+'''
 
 def get_data(data_dir):
     data = []
@@ -27,8 +33,8 @@ def get_data(data_dir):
         class_num = labels.index(label)
         for img in os.listdir(path):
             try:
-                img_arr = cv2.imread(os.path.join(path, img))[...,::-1] #convert BGR to RGB format
-                resized_arr = cv2.resize(img_arr, (img_size_h, img_size_w)) # Reshaping images to preferred size
+                img_arr = cv2.imread(os.path.join(path, img))[...,::-1] # convert BGR to RGB format
+                resized_arr = cv2.resize(img_arr, (img_size_h, img_size_w)) # reshaping images to preferred size
                 data.append([resized_arr, class_num])
             except Exception as e:
                 print(e)
