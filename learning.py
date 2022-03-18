@@ -20,10 +20,10 @@ import os
 import numpy as np
 
 ''' 
-Разбитые по папкам фото резисторов из двух выборок - тестовая и тренировочная - подгружаются в модель, которая
-затем обучается на фотографиях и сохраняется в проект.
+Folded photos of resistors from the samples - testing and training - are loaded into the model, which
+then learns from photographs and is being saved into the project.
 
-В массив labels пишутся названия папок с разными типа резисторов
+The label arrays contain the names of folders with particles like resistors. 
 '''
 
 def get_data(data_dir):
