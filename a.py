@@ -27,7 +27,7 @@ width_chip, height_chip = 400, 300
 
 
 def img2hsv(img):
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     return img
 
 
@@ -77,7 +77,7 @@ def mask_img(img, min_hue, max_hue, min_sat, max_sat, min_val, max_val):
 
 
 def img_chip_select(img):
-    img_gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img_blur = cv2.GaussianBlur(img_gray, (5, 5), 1)
     img_canny = cv2.Canny(img_blur, 100, 100)
     kernel = np.ones((5, 5))
@@ -144,17 +144,8 @@ def get_resistor_images(chip_img, resistor_placement):  # выделяет ре�
     return resistor_images
 
 
-# def resistor_detection(resistor_placement): # TODO должен определять сопротивление резисторова на каждом месте чипа
-#     name = ""
-#     (w_res, h_res) = (110, 40)
-#     for t in resistor_placement:
-#         t_num = int(t[0])
-#         chip_img = cv2.imread("output/chip_norm_pos.jpg")
-#         res = chip_img[int(t[2]):int(t[2]) + h_res, int(t[1]):int(t[1]) + w_res]
-#         name = "output/res_"+str(t_num)+".jpg"
-#         cv2.imwrite(name, res)
-
 model = models.load_model('resistor-position-control/transistor_classifier.model')
+
 
 def process_photo(img):
     img_orig = cv2.resize(img, (width_img, height_img))
@@ -188,7 +179,6 @@ def process_photo(img):
         prediction = model.predict(np.array([img]) / 255,batch_size=1)
         results[count] = ([labels[np.argmax(prediction)], prediction[0][np.argmax(prediction)]])
         count += 1
-
 
     return cropped_chip_img, resistor_images, results
 

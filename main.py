@@ -24,7 +24,7 @@ while True:
         break
 
     if event == 'enter':
-        cap = cv2.VideoCapture( values['link'] )
+        cap = cv2.VideoCapture(values['link'])
         ret, frame = cap.read()
 
         frames = 0
