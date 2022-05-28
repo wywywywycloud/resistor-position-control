@@ -1,0 +1,9 @@
+opencv-python
+numpy
+matplotlib
+seaborn
+keras
+PySimpleGUI
+tensorflow
+
+# copyright misha.txt
