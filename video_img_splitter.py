@@ -2,10 +2,10 @@ import cv2
 
 sensor_num = 1
 
-while sensor_num <= 16:
+while sensor_num <= 1:
 
-    video_path = 'C:/Users/wywycloud/PycharmProjects/course-resistor-position-control/resources/sensor_videos/type_1/'
-    video_name = 'vid (' + str(sensor_num) + ').MOV'
+    video_path = 'C:/Users/wywycloud/PycharmProjects/course-resistor-position-control/resources/sensor_videos/t_1/'
+    video_name = 'vid (' + str(sensor_num) + ').mp4'
     cap = cv2.VideoCapture(video_path + video_name)
 
     # Check if camera opened successfully
@@ -19,7 +19,7 @@ while sensor_num <= 16:
 
         if ret:
             cv2.imwrite('resources/temp/frame{:d}.jpg'.format(count), frame)
-            count += 15 # i.e. at 30 fps, this advances one second
+            count += 1 # i.e. at 30 fps, this advances one second
             cap.set(cv2.CAP_PROP_POS_FRAMES, count)
             cv2.imwrite(video_path + str(sensor_num) + '/Frame' + str(i) + '.jpg', frame)
             i += 1

@@ -1,24 +1,12 @@
 import cv2
 import numpy as np
-from keras.utils.vis_utils import plot_model
 from numpy import genfromtxt
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-import keras
-from keras.models import Sequential
-from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout
-from tensorflow.keras.optimizers import Adam
-from keras.preprocessing.image import ImageDataGenerator
-
-# import graphviz
-# import pydot
-
-from tensorflow.python.keras import models, layers
 
 # 5182, 3455
 width_img, height_img = 1869, 1052
 width_chip, height_chip = 400, 300
+res_type = 't_2'
+resistor_placement = genfromtxt('Resources/' + res_type + '_resistor_coordinates.csv', delimiter=';')
 
 
 # default color scheme 47, 95, 52, 255, 73, 255
@@ -35,8 +23,8 @@ def empty(a):
     pass
 
 
-def img_color_calibration(
-        img):  # позволяет определить точный цвет искомой области (платы) с настройкой в реальном времени
+# позволяет определить точный цвет искомой области (платы) с настройкой в реальном времени
+def img_color_calibration(img):
     img = cv2.resize(img, (width_img, height_img))
     hsv_img = img2hsv(img)
     cv2.namedWindow("color options")
@@ -79,15 +67,20 @@ def mask_img(img, min_hue, max_hue, min_sat, max_sat, min_val, max_val):
 
 def img_chip_select(img):
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img_blur = cv2.GaussianBlur(img_gray, (5, 5), 1)
-    img_canny = cv2.Canny(img_blur, 100, 100)
+    img_blur = cv2.GaussianBlur(img_gray, (5, 5), 5)
+    img_canny = cv2.Canny(img_blur, 150, 80)
     kernel = np.ones((5, 5))
-    img_dilation = cv2.dilate(img_canny, kernel, iterations=2)
-    img_threshold = cv2.erode(img_dilation, kernel, iterations=1)
+    img_dilation = cv2.dilate(img_canny, kernel, iterations=20)
+    img_threshold = cv2.erode(img_dilation, kernel, iterations=3)
+
     return img_threshold
 
 
 def get_chip_contour(img, img_orig):  # ищет прямоугольник на выделенном с фото с помощью маски чипе
+    # !!! point numeration - 0 -- 1
+    #                        |    |
+    #                        3 -- 2
+
     (y_chip, x_chip) = (390, 654)
 
     contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -100,7 +93,7 @@ def get_chip_contour(img, img_orig):  # ищет прямоугольник на
             cv2.drawContours(img_orig, cnt, -1, (255, 0, 0), 1)
             cv2.fillPoly(img_orig, pts=[cnt], color=(255, 255, 255))  # Закрашивает контур платы
             peri = cv2.arcLength(cnt, True)
-            approx_points = cv2.approxPolyDP(cnt, 0.05 * peri, True)
+            approx_points = cv2.approxPolyDP(cnt, 1 * peri, True)
             cv2.imwrite("output/chip_boundaries.jpg", img)
 
             type(approx_points)
@@ -127,74 +120,64 @@ def get_chip_contour(img, img_orig):  # ищет прямоугольник на
             return (cropped_chip_jpg)
 
 
-def get_resistor_images(chip_img, resistor_placement):  # выделяет резисторы с обрезанного фото чипа
+def get_resistor_images(chip_img, resistor_placement, path, j):  # выделяет резисторы с обрезанного фото чипа
     (w_res, h_res) = (110, 40)
 
     resistor_images = []
     for t in resistor_placement:
         t_num = int(t[0])
         res = chip_img[int(t[2]):int(t[2]) + h_res, int(t[1]):int(t[1]) + w_res]
-        name = "output/res_" + str(t_num) + ".jpg"
+        name = path + str(t_num) + "/res_" + str(j) + ".jpg"
         cv2.imwrite(name, res)
         resistor_images.append(res)
 
-    return resistor_images
 
-
-model = models.load_model('C:/Users/wywycloud/PycharmProjects/course-resistor-position-control/transistor_classifier.model')
-
-
-def process_photo(img):
+def crop_chip(img, img_path, path, j):
     img_orig = cv2.resize(img, (width_img, height_img))
     cv2.imwrite("output/img_orig.jpg", img_orig)
     img = cv2.resize(img, (width_img, height_img))
 
-    min_hue, max_hue, min_sat, max_sat, min_val, max_val = 47, 95, 52, 255, 73, 255
+    #min_hue, max_hue, min_sat, max_sat, min_val, max_val = 70, 164, 111, 255, 82, 255 # 28.05.22
+    min_hue, max_hue, min_sat, max_sat, min_val, max_val = 79,89,118,255,20,255 # t_1
+    min_hue, max_hue, min_sat, max_sat, min_val, max_val = 82, 110, 124, 255, 15, 184  # t_2
+    # min_hue, max_hue, min_sat, max_sat, min_val, max_val = 76,150,151,255,36,175
+    # min_hue, max_hue, min_sat, max_sat, min_val, max_val = 47, 95, 52, 255, 73, 255
     masked_img = mask_img(img, min_hue, max_hue, min_sat, max_sat, min_val, max_val)
 
     uncropped_chip_img = cv2.bitwise_and(img, img, mask=masked_img)
     chip_uncrop_masked = img_chip_select(uncropped_chip_img)
     cropped_chip_img = get_chip_contour(chip_uncrop_masked, img_orig)
+    cv2.imwrite(path + 'resistors/' + str(j) + '.jpg', cropped_chip_img)
+    return cropped_chip_img
 
-    #TODO: исправить чтобы можно было подсовывать разные датчики
-    resistor_placement = genfromtxt('C:/Users/wywycloud/PycharmProjects/course-resistor-position-control/Resources/t_1_resistor_coordinates.csv', delimiter=';')
+img3 = cv2.imread('C:/Users/wywycloud/PycharmProjects/course-resistor-position-control/Resources/sensor_videos/t_1/1/Frame0.jpg')
+# img_color_calibration(img3)
 
-    resistor_images = []
-    resistor_images = get_resistor_images(cropped_chip_img, resistor_placement)
+sensor_num = 1
+img_num = 1
+def_path = 'C:/Users/wywycloud/PycharmProjects/course-resistor-position-control/Resources/sensor_videos/' + res_type + '/'
+j = 0
 
-    labels = {0: 'no_res',
-              1: '1 Om',
-              2: '2 Om',
-              3: '3 Om',
-              4: '4 Om',
-              5: '5 Om',
-              6: '6 Om',
-              7: '7 Om',
-              8: '8 Om',
-              9: '9 Om',
-              10: '10 Om',
-              11: '11 Om',
-              12: '12 Om',
-              13: '13 Om',
-              14: '14 Om'}
+while sensor_num < 17:
+    #active_path = def_path + str(sensor_num) + '/resistors/'
+    #img_path = active_path + 'chip (' + str(img_num) + ').jpg'
+    active_path = def_path + str(sensor_num) + '/'
+    img_path = active_path + 'Frame' + str(img_num - 1) + '.jpg'
+    img = cv2.imread(img_path)
+   # cv2.imshow('1',img)
+  #  cv2.waitKey(0)
+    img = crop_chip(img, img_path, active_path, j)
 
-    results = {}
-    count = 0
-    for r in resistor_images:
-        # img = np.array(r) / 255
-        img = cv2.cvtColor(r, cv2.COLOR_BGR2RGB)
-        prediction = model.predict(np.array([img]) / 255, batch_size=1)
-        results[count] = ([labels[np.argmax(prediction)], prediction[0][np.argmax(prediction)]])
-        count += 1
+    if img is None:
+        j = 0
+        sensor_num += 1
+        img_num = 1
+        active_path = def_path + str(sensor_num) + '/resistors/'
+        img_path = active_path + 'chip (' + str(img_num) + ').jpg'
+        img = cv2.imread(img_path)
+        img = crop_chip(img, img_path, active_path, j)
 
-    return cropped_chip_img, resistor_images, results
+    get_resistor_images(img, resistor_placement, active_path, j)
+    j += 1
+    img_num += 1
 
-# img_read = cv2.imread("Resources/photo (1).jpg")
-# cv2.imshow("resistor", img_read)
-# cv2.waitKey(500)
-#
-# img_processed, resistor_images = process_photo(img_read)
-#
-# for res in resistor_images:
-#     cv2.imshow("resistor", res)
-#     cv2.waitKey(500)
