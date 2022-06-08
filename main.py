@@ -10,7 +10,7 @@ trs = []
 for i in range(12):
     trs.append([sg.vtop(sg.Image('', size=(65, 350), key='trs'+str(i)))])
 
-layout = [[sg.Column([[sg.Input(default_text='D:/documents/coursach/resistor-position-control/resistor-position-control/Resources/video_test.mp4', size=(80, 1), key='link'), sg.Button('enter')],
+layout = [[sg.Column([[sg.Input(default_text='C:/Users/wywycloud/PycharmProjects/course-resistor-position-control/Resources/video_test.mp4', size=(80, 1), key='link'), sg.Button('enter')],
           [sg.Image('', size=(700, 400), key='board')],
           [sg.Image('', size=(700, 400), key='video')]]),
           sg.Column(trs),
